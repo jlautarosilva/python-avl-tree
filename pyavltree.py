@@ -1,7 +1,5 @@
 import random, math
 
-
-
 def random_data_generator (max_r):
     for i in xrange(max_r):
         yield random.randint(0, max_r)
@@ -53,10 +51,10 @@ class AVLTree():
     def rebalance (self, node_to_rebalance):
         self.rebalance_count += 1
         A = node_to_rebalance 
-        F = A.parent #allowed to be NULL
+        F = A.parent #Puede ser NULO
         if node_to_rebalance.balance() == -2:
             if node_to_rebalance.rightChild.balance() <= 0:
-                """Rebalance, case RRC """
+                """Revalancea para el caso Derecha Derecha"""
                 B = A.rightChild
                 C = B.rightChild
                 assert (not A is None and not B is None and not C is None)
@@ -77,7 +75,7 @@ class AVLTree():
                 self.recompute_heights (A) 
                 self.recompute_heights (B.parent)                                                                                         
             else:
-                """Rebalance, case RLC """
+                """Revalance Derecha Izquierda """
                 B = A.rightChild
                 C = B.leftChild
                 assert (not A is None and not B is None and not C is None)
@@ -107,7 +105,7 @@ class AVLTree():
             if node_to_rebalance.leftChild.balance() >= 0:
                 B = A.leftChild
                 C = B.leftChild
-                """Rebalance, case LLC """
+                """Revalancea Izquierda Izquierda """
                 assert (not A is None and not B is None and not C is None)
                 A.leftChild = B.rightChild
                 if (A.leftChild): 
@@ -128,7 +126,7 @@ class AVLTree():
             else:
                 B = A.leftChild
                 C = B.rightChild 
-                """Rebalance, case LRC """
+                """Revalance Izquierda Derecha """
                 assert (not A is None and not B is None and not C is None)
                 A.leftChild = C.rightChild
                 if A.leftChild:
@@ -158,34 +156,34 @@ class AVLTree():
         else:
             node = args[0]
         if (node  is None) or (node.is_leaf() and node.parent is None ):
-            # trival - no sanity check needed, as either the tree is empty or there is only one node in the tree     
+            # No es necesario si el arbol esta vacio o con un solo elemento
             pass    
         else:
             if node.height != node.max_children_height() + 1:
-                raise Exception ("Invalid height for node " + str(node) + ": " + str(node.height) + " instead of " + str(node.max_children_height() + 1) + "!" )
+                raise Exception ("altura de nodos invalida" + str(node) + ": " + str(node.height) + " en vez de  " + str(node.max_children_height() + 1) + "!" )
                 
             balFactor = node.balance()
-            #Test the balance factor
+            #Prueba el factor de balance
             if not (balFactor >= -1 and balFactor <= 1):
-                raise Exception ("Balance factor for node " + str(node) + " is " + str(balFactor) + "!")
-            #Make sure we have no circular references
+                raise Exception ("Factor de balanceo para el nodo " + str(node) + " es " + str(balFactor) + "!")
+            #Nos aseguramos de que no hallan referencia circulares
             if not (node.leftChild != node):
-                raise Exception ("Circular reference for node " + str(node) + ": node.leftChild is node!")
+                raise Exception ("Referencia circular para el nodo " + str(node) + ": node.leftChild es un nodo!")
             if not (node.rightChild != node):
-                raise Exception ("Circular reference for node " + str(node) + ": node.rightChild is node!")
+                raise Exception ("Referencia circular del nodo " + str(node) + ": node.rightChild es un nodo!")
             
             if ( node.leftChild ): 
                 if not (node.leftChild.parent == node):
-                    raise Exception ("Left child of node " + str(node) + " doesn't know who his father is!")
+                    raise Exception ("Nodo hijo izquierdo " + str(node) + " no sabe quien es su padre!")
                 if not (node.leftChild.key <=  node.key):
-                    raise Exception ("Key of left child of node " + str(node) + " is greater than key of his parent!")
+			raise Exception ("key del nodo hijo izquierdo " + str(node) + " es amyor que la key de su padre!")
                 self.sanity_check(node.leftChild)
             
             if ( node.rightChild ): 
                 if not (node.rightChild.parent == node):
-                    raise Exception ("Right child of node " + str(node) + " doesn't know who his father is!")
+                    raise Exception ("Nodo hijo derecho " + str(node) + " No sabe quien es su padre!")
                 if not (node.rightChild.key >=  node.key):
-                    raise Exception ("Key of right child of node " + str(node) + " is less than key of his parent!")
+                    raise Exception ("Key del nodo derecho " + str(node) + " es menor que la key de su padre!")
                 self.sanity_check(node.rightChild)
             
     def recompute_heights (self, start_from_node):
@@ -209,7 +207,7 @@ class AVLTree():
                         node.height = node.max_children_height() + 1
                         if not node.balance () in [-1, 0, 1]:
                             node_to_rebalance = node
-                            break #we need the one that is furthest from the root
+                            break #necesitamos el nodo mas lejano a la raiz
                         node = node.parent     
             else:
                 self.add_as_child(parent_node.leftChild, child_node)
@@ -223,7 +221,7 @@ class AVLTree():
                         node.height = node.max_children_height() + 1
                         if not node.balance () in [-1, 0, 1]:
                             node_to_rebalance = node
-                            break #we need the one that is furthest from the root
+                            break #necesitamos el nodo mas lejano a la raiz
                         node = node.parent       
             else:
                 self.add_as_child(parent_node.rightChild, child_node)
@@ -316,12 +314,12 @@ class AVLTree():
     
     def find_in_subtree (self,  node, key):
         if node is None:
-            return None  # key not found
+            return None  # No se encontro la key del elemento
         if key < node.key:
             return self.find_in_subtree(node.leftChild, key)
         elif key > node.key:
             return self.find_in_subtree(node.rightChild, key)
-        else:  # key is equal to node key
+        else:  # Se encontro la key correspondiente
             return node
     
     def remove (self, key):
@@ -331,12 +329,13 @@ class AVLTree():
         if not node is None:
             self.elements_count -= 1
             
-            #     There are three cases:
+            #     Existen tres casos:
+            #      
+            #     1) El nodo es una hoja. Se elimina y se regresa
             # 
-            #     1) The node is a leaf.  Remove it and return.
+            #     2) El nodo es una rama con un solo hijo. Se apunta al hijo en vez del padre
             # 
-            #     2) The node is a branch (has only 1 child). Make the pointer to this node 
-            #        point to the child of this node.
+            #     3) El nodo tiene dos hijos. Se intercambia  el sucesor del nodo (el menor a su derecha) y se elimina el subarbol de la derecha
             # 
             #     3) The node has two children. Swap items with the successor
             #        of the node (the smallest item in its right subtree) and
@@ -361,7 +360,7 @@ class AVLTree():
         else:
             self.rootNode = None
         del node
-        # rebalance
+        # Rebalancea
         node = parent
         while (node):
             if not node.balance() in [-1, 0, 1]:
@@ -384,7 +383,7 @@ class AVLTree():
                 node.rightChild.parent = parent 
             self.recompute_heights(parent)
         del node
-        # rebalance
+        # rebalancea
         node = parent
         while (node):
             if not node.balance() in [-1, 0, 1]:
@@ -412,7 +411,7 @@ class AVLTree():
         assert (leftChild2 is None)
         rightChild2 = node2.rightChild
         
-        # swap heights
+        # Intercambia alturas 
         tmp = node1.height 
         node1.height = node2.height
         node2.height = tmp
@@ -444,7 +443,7 @@ class AVLTree():
             node2.rightChild = node1
             node1.parent = node2           
            
-    # use for debug only and only with small trees            
+    # Mostrar arbol pequeno
     def out(self, start_node = None):
         if start_node == None:
             start_node = self.rootNode
@@ -453,7 +452,7 @@ class AVLTree():
         out_string = ""
         initial_spaces_string  = space_symbol * spaces_count + "\n" 
         if not start_node:
-            return "AVLTree is empty"
+            return "AVLTree esta vacio"
         else:
             level = [start_node]
             while (len([i for i in level if (not i is None)])>0):
@@ -469,32 +468,31 @@ class AVLTree():
         return out_string
 
 if __name__ == "__main__":    
-    """check empty tree creation"""
-    a = AVLTree ()
-    a.sanity_check()
-    
-    """check not empty tree creation"""
-    seq = [1,2,3,4,5,6,7,8,9,10,11,12]
-    seq_copy = [1,2,3,4,5,6,7,8,9,10,11,12]
-    #random.shuffle(seq)
-    b = AVLTree (seq)
-    b.sanity_check()
-    
-    """check that inorder traversal on an AVL tree 
-    (and on a binary search tree in the whole) 
-    will return values from the underlying set in order"""
-    assert (b.as_list(3) == b.as_list(1) == seq_copy)
-    
-    """check that node deletion works"""
-    c = AVLTree (random_data_generator (10000))
-    before_deletion = c.elements_count
-    for i in random_data_generator (1000):
-        c.remove(i)
-    after_deletion = c.elements_count
-    c.sanity_check()
-    assert (before_deletion >= after_deletion)
-    #print c.out()
-    
-    """check that an AVL tree's height is strictly less than 
-    1.44*log2(N+2)-1 (there N is number of elements)"""
-    assert (c.height() < 1.44 * math.log(after_deletion+2, 2) - 1)
+
+    d = AVLTree()   
+
+    """Menu"""
+    opcion = int(input("Menu:\n"+"\n1. Mostrar Arbol\n"+"\n2. Agregar\n"+"\n3. Eliminar\n"+"\n4. Salir\n"))
+
+    while(opcion != 4):
+
+        if(opcion == 1):
+            print d.out()
+
+        elif(opcion == 2):
+            temp = int(input("Elemento a ingresar : \n"))
+            d.insert(temp)
+            print d.out()
+
+        elif(opcion == 3):
+            temp = int(input("Elemento a ingresar : \n"))
+            d.remove(temp)
+            print d.out()
+
+        elif(opcion == 4):
+            break
+        else:
+            print "Ingrese una opcion valida"
+
+        opcion = int(input("Menu:\n"+"\n1. Mostrar Arbol\n"+"\n2. Agregar\n"+"\n3. Eliminar\n"+"\n4. Salir\n"))
+
